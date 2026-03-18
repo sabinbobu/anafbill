@@ -2,7 +2,7 @@ export default function LandingPage() {
   return (
     <main className="min-h-screen bg-background flex flex-col items-center justify-center gap-6 p-8">
       <div className="text-center space-y-4 max-w-2xl">
-        <h1 className="text-5xl font-bold text-primary">FacturAI</h1>
+        <h1 className="text-5xl font-bold text-primary">Anaf Bill</h1>
         <p className="text-xl text-muted-foreground">
           e-Factura cu inteligență artificială. Simplu. Rapid. Fără amenzi.
         </p>

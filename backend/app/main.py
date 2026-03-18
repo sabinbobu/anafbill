@@ -8,7 +8,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(
-    title="FacturAI API",
+    title="Anaf Bill API",
     description="AI-Powered e-Factura Compliance Assistant",
     version="0.1.0",
 )
@@ -32,4 +32,4 @@ app.include_router(archive.router, prefix="/api/archive", tags=["archive"])
 
 @app.get("/api/health", tags=["health"])
 async def health_check() -> dict:
-    return {"status": "ok", "service": "facturai-api", "version": "0.1.0"}
+    return {"status": "ok", "service": "anafbill-api", "version": "0.1.0"}

@@ -1,16 +1,16 @@
-# FacturAI — AI-Powered e-Factura Compliance Assistant
+# Anaf Bill — AI-Powered e-Factura Compliance Assistant
 
 ## Project Identity
 
-- **Name**: FacturAI
+- **Name**: Anaf Bill
 - **Tagline**: e-Factura cu inteligență artificială. Simplu. Rapid. Fără amenzi.
-- **Domain**: facturai.ro
-- **Repository**: github.com/sabinbobu/facturai
+- **Domain**: anafbill.ro
+- **Repository**: github.com/sabinbobu/anafbill
 - **Author**: Sabin Bobu
 
 ## What This Project Does
 
-FacturAI is a web application that helps Romanian micro-businesses (PFAs, small SRLs) comply with mandatory e-Factura obligations. It provides:
+anafbill is a web application that helps Romanian micro-businesses (PFAs, small SRLs) comply with mandatory e-Factura obligations. It provides:
 
 1. **Invoice creation** via a simple form (no XML/accounting knowledge needed)
 2. **UBL 2.1 XML generation** compliant with RO_CIUS national specification
@@ -368,7 +368,7 @@ HOLIDAYS_2026 = [
 The chatbot uses Claude Haiku for cost efficiency. Here is the system prompt:
 
 ```
-Ești asistentul fiscal AI al FacturAI. Răspunzi DOAR la întrebări despre:
+Ești asistentul fiscal AI al anafbill. Răspunzi DOAR la întrebări despre:
 - e-Factura (RO e-Factura, SPV, XML, UBL)
 - Obligații fiscale pentru PFA și SRL în România
 - Erori ANAF (coduri BR-RO-XXX) și cum se rezolvă
@@ -391,8 +391,8 @@ Reguli:
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/sabinbobu/facturai.git
-cd facturai
+git clone https://github.com/sabinbobu/anafbill.git
+cd anafbill
 
 # 2. Backend setup
 cd backend
@@ -437,7 +437,7 @@ SUPABASE_SERVICE_KEY=eyJhbGciOiJI...
 # ANAF OAuth2
 ANAF_CLIENT_ID=your_client_id
 ANAF_CLIENT_SECRET=your_client_secret
-ANAF_REDIRECT_URI=https://facturai.ro/api/auth/anaf/callback
+ANAF_REDIRECT_URI=https://anafbill.ro/api/auth/anaf/callback
 ANAF_ENV=test  # 'test' or 'prod'
 
 # Anthropic (for AI chatbot)
@@ -499,7 +499,7 @@ SECRET_KEY=generate-a-random-secret-key
 3. Implement Stripe subscription (free/pro/business/accountant tiers)
 4. Final UI polish and responsive design
 5. Deploy to Railway (EU region)
-6. Set up custom domain (facturai.ro)
+6. Set up custom domain (anafbill.ro)
 7. Set up Sentry + PostHog
 
 ## Coding Conventions

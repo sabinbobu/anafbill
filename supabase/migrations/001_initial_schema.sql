@@ -1,4 +1,4 @@
--- FacturAI Initial Schema
+-- anafbill Initial Schema
 -- Migration: 001_initial_schema.sql
 
 -- Enable UUID extension
