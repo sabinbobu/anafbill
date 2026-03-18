@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { useChatHistory, useSendMessage } from "@/hooks/useChat"
 import type { ChatMessage } from "@/hooks/useChat"
+import { useToast } from "@/hooks/use-toast"
 import { Send, Bot, User } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -68,6 +69,7 @@ function TypingIndicator() {
 export default function ChatPage() {
   const { data: history, isLoading } = useChatHistory()
   const sendMessage = useSendMessage()
+  const { toast } = useToast()
   const [input, setInput] = useState("")
   const [optimisticMsg, setOptimisticMsg] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
@@ -87,8 +89,18 @@ export default function ChatPage() {
     setOptimisticMsg(msg)
     try {
       await sendMessage.mutateAsync({ message: msg, history: history ?? [] })
-    } finally {
       setOptimisticMsg(null)
+    } catch (err: unknown) {
+      setOptimisticMsg(null)
+      setInput(msg)
+      const status = (err as { response?: { status?: number } })?.response?.status
+      const description =
+        status === 404
+          ? "Creează mai întâi profilul organizației în Setări."
+          : status === 502
+          ? "Serviciul AI este temporar indisponibil. Încearcă din nou."
+          : "Mesajul nu a putut fi trimis. Încearcă din nou."
+      toast({ title: "Eroare", description, variant: "destructive" })
     }
   }
 
