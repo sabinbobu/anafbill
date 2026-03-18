@@ -8,21 +8,12 @@ export interface ChatMessage {
   created_at: string
 }
 
-interface SendMessageDto {
-  message: string
-}
-
-interface ChatResponse {
-  reply: string
-  message_id: string
-}
-
 export function useChatHistory() {
   return useQuery({
     queryKey: ["chat", "history"],
     queryFn: async () => {
-      const { data } = await api.get<{ messages: ChatMessage[] }>("/chat/history")
-      return data.messages
+      const { data } = await api.get<ChatMessage[]>("/chat/history")
+      return data
     },
   })
 }
@@ -30,9 +21,18 @@ export function useChatHistory() {
 export function useSendMessage() {
   const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async (dto: SendMessageDto) => {
-      const { data } = await api.post<ChatResponse>("/chat/", dto)
-      return data
+    mutationFn: async ({
+      message,
+      history,
+    }: {
+      message: string
+      history: ChatMessage[]
+    }) => {
+      const { data } = await api.post<{ reply: string }>("/chat/", {
+        message,
+        history: history.map((m) => ({ role: m.role, content: m.content })),
+      })
+      return data.reply
     },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["chat"] }),
   })

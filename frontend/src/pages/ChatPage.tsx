@@ -14,7 +14,7 @@ const QUICK_QUESTIONS = [
   "TVA la servicii IT",
 ]
 
-function MessageBubble({ message }: { message: ChatMessage }) {
+function MessageBubble({ message }: { message: ChatMessage | { id: string; role: "user" | "assistant"; content: string } }) {
   const isUser = message.role === "user"
   return (
     <div className={cn("flex gap-3 max-w-[85%]", isUser ? "ml-auto flex-row-reverse" : "mr-auto")}>
@@ -32,7 +32,7 @@ function MessageBubble({ message }: { message: ChatMessage }) {
       </div>
       <div
         className={cn(
-          "rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+          "rounded-2xl px-4 py-2.5 text-sm leading-relaxed whitespace-pre-wrap",
           isUser
             ? "bg-primary text-primary-foreground rounded-tr-sm"
             : "bg-slate-100 text-foreground rounded-tl-sm"
@@ -69,6 +69,7 @@ export default function ChatPage() {
   const { data: history, isLoading } = useChatHistory()
   const sendMessage = useSendMessage()
   const [input, setInput] = useState("")
+  const [optimisticMsg, setOptimisticMsg] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -77,13 +78,18 @@ export default function ChatPage() {
 
   useEffect(() => {
     scrollToBottom()
-  }, [history, sendMessage.isPending])
+  }, [history, sendMessage.isPending, optimisticMsg])
 
   const handleSend = async (text?: string) => {
     const msg = (text ?? input).trim()
     if (!msg || sendMessage.isPending) return
     setInput("")
-    await sendMessage.mutateAsync({ message: msg })
+    setOptimisticMsg(msg)
+    try {
+      await sendMessage.mutateAsync({ message: msg, history: history ?? [] })
+    } finally {
+      setOptimisticMsg(null)
+    }
   }
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -92,6 +98,13 @@ export default function ChatPage() {
       void handleSend()
     }
   }
+
+  const allMessages = [
+    ...(history ?? []),
+    ...(optimisticMsg
+      ? [{ id: "__optimistic__", role: "user" as const, content: optimisticMsg }]
+      : []),
+  ]
 
   return (
     <PageLayout title="Asistent AI">
@@ -114,7 +127,7 @@ export default function ChatPage() {
             <div className="flex items-center justify-center h-full text-muted-foreground text-sm">
               Se încarcă conversația...
             </div>
-          ) : !history?.length ? (
+          ) : !allMessages.length ? (
             <div className="flex flex-col items-center justify-center h-full gap-3 text-center">
               <div className="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
                 <Bot className="h-6 w-6 text-blue-600" />
@@ -128,7 +141,7 @@ export default function ChatPage() {
             </div>
           ) : (
             <>
-              {history.map((msg) => (
+              {allMessages.map((msg) => (
                 <MessageBubble key={msg.id} message={msg} />
               ))}
               {sendMessage.isPending && <TypingIndicator />}
