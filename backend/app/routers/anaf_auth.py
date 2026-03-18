@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from fastapi import APIRouter, HTTPException, Query
 from fastapi.responses import RedirectResponse
 
+from ..config import settings
 from ..dependencies import CurrentUser, SupabaseClient
 from ..services.anaf_oauth import (
     exchange_code,
@@ -60,7 +61,7 @@ async def callback(
     error_description: str | None = Query(default=None),
 ) -> RedirectResponse:
     """ANAF OAuth2 callback — exchange code for tokens and store them."""
-    app_url = "http://localhost:5173"  # replaced by settings in production
+    app_url = settings.app_url
 
     if error:
         logger.warning("ANAF auth error: %s — %s", error, error_description)
