@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
 import { PageLayout } from "@/components/layout/PageLayout"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -10,7 +11,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import { useToast } from "@/hooks/use-toast"
 import type { Organization } from "@/types/organization"
-import { Link2, Link2Off } from "lucide-react"
+import { Link2, Link2Off, Loader2 } from "lucide-react"
 
 interface OrgForm {
   cui: string
@@ -60,6 +61,7 @@ export default function SettingsPage() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
   const [form, setForm] = useState<OrgForm>(EMPTY_FORM)
+  const [searchParams, setSearchParams] = useSearchParams()
 
   const { data: org, isLoading } = useQuery({
     queryKey: ["organization", "me"],
@@ -72,6 +74,25 @@ export default function SettingsPage() {
   useEffect(() => {
     if (org) setForm(orgToForm(org))
   }, [org])
+
+  // Handle OAuth callback params from ANAF
+  useEffect(() => {
+    const anafConnectedParam = searchParams.get("anaf_connected")
+    const anafError = searchParams.get("anaf_error")
+    if (anafConnectedParam === "true") {
+      toast({ title: "ANAF conectat", description: "Contul tău ANAF SPV a fost conectat cu succes." })
+      queryClient.invalidateQueries({ queryKey: ["organization"] })
+      setSearchParams({}, { replace: true })
+    } else if (anafError) {
+      toast({
+        title: "Eroare ANAF",
+        description: `Conectarea ANAF a eșuat: ${anafError.replace(/_/g, " ")}`,
+        variant: "destructive",
+      })
+      setSearchParams({}, { replace: true })
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   const updateOrg = useMutation({
     mutationFn: async (dto: Partial<OrgForm>) => {
@@ -95,6 +116,33 @@ export default function SettingsPage() {
     e.preventDefault()
     updateOrg.mutate(form)
   }
+
+  const anafConnect = useMutation({
+    mutationFn: async () => {
+      const { data } = await api.get<{ authorization_url: string }>("/auth/anaf/authorize")
+      return data.authorization_url
+    },
+    onSuccess: (url) => {
+      window.location.href = url
+    },
+    onError: () => {
+      toast({
+        title: "Eroare",
+        description: "Nu s-a putut genera URL-ul de autorizare ANAF.",
+        variant: "destructive",
+      })
+    },
+  })
+
+  const anafDisconnect = useMutation({
+    mutationFn: async () => {
+      await api.delete("/auth/anaf/disconnect")
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["organization"] })
+      toast({ title: "Deconectat", description: "Contul ANAF SPV a fost deconectat." })
+    },
+  })
 
   const anafConnected =
     org?.anaf_token_expires_at && new Date(org.anaf_token_expires_at) > new Date()
@@ -298,14 +346,26 @@ export default function SettingsPage() {
               pentru a obține acreditările necesare.
             </p>
 
-            <Button
-              variant="outline"
-              onClick={() => {
-                window.location.href = "/api/auth/anaf/connect"
-              }}
-            >
-              {anafConnected ? "Reconectează ANAF" : "Conectează ANAF"}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => anafConnect.mutate()}
+                disabled={anafConnect.isPending}
+              >
+                {anafConnect.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                {anafConnected ? "Reconectează ANAF" : "Conectează ANAF"}
+              </Button>
+              {anafConnected && (
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive"
+                  onClick={() => anafDisconnect.mutate()}
+                  disabled={anafDisconnect.isPending}
+                >
+                  Deconectează
+                </Button>
+              )}
+            </div>
           </CardContent>
         </Card>
       </div>

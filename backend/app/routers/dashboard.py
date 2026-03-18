@@ -94,11 +94,14 @@ async def get_dashboard(
             and today <= deadline <= deadline_warning_horizon
             and status not in _TERMINAL_STATUSES
         ):
+            days_remaining = (deadline - today).days
             upcoming_deadlines.append(
                 {
-                    "id": inv.get("id"),
+                    "invoice_id": inv.get("id"),
                     "invoice_number": inv.get("invoice_number"),
+                    "issue_date": issue_raw,
                     "deadline_date": deadline_raw,
+                    "days_remaining": days_remaining,
                     "status": status,
                 }
             )

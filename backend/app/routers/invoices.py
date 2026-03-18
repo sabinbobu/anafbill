@@ -177,10 +177,8 @@ async def get_invoice(
     org = _get_org(supabase, current_user["id"])
     invoice = _require_invoice(supabase, invoice_id, org["id"])
     lines = _get_lines(supabase, invoice_id)
-    # Attach lines to the response for convenience (not in InvoiceResponse model
-    # but avoids a second round-trip when callers need them)
     invoice["lines"] = lines
-    return InvoiceResponse(**{k: v for k, v in invoice.items() if k != "lines"})
+    return InvoiceResponse(**invoice)
 
 
 @router.put("/{invoice_id}", response_model=InvoiceResponse)

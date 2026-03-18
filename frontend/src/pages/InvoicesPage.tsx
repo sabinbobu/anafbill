@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { useInvoices } from "@/hooks/useInvoices"
+import { useClients } from "@/hooks/useClients"
 import type { InvoiceStatus } from "@/types/invoice"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -57,6 +58,8 @@ export default function InvoicesPage() {
   const navigate = useNavigate()
   const [activeFilter, setActiveFilter] = useState<FilterValue>(undefined)
   const { data: invoices, isLoading } = useInvoices(activeFilter)
+  const { data: clients } = useClients()
+  const clientMap = Object.fromEntries((clients ?? []).map((c) => [c.id, c.name]))
 
   return (
     <PageLayout
@@ -131,7 +134,7 @@ export default function InvoicesPage() {
                         onClick={() => navigate(`/invoices/${invoice.id}`)}
                       >
                         <td className="px-4 py-3 font-medium">{invoice.invoice_number}</td>
-                        <td className="px-4 py-3 text-muted-foreground">{invoice.client_id}</td>
+                        <td className="px-4 py-3 text-muted-foreground">{clientMap[invoice.client_id] ?? "—"}</td>
                         <td className="px-4 py-3 text-muted-foreground">
                           {formatDate(invoice.issue_date)}
                         </td>

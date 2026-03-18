@@ -14,6 +14,19 @@ class InvoiceLineCreate(BaseModel):
     line_total: float
 
 
+class InvoiceLineResponse(BaseModel):
+    id: str
+    invoice_id: str
+    line_number: int
+    description: str
+    quantity: float
+    unit_code: str
+    unit_price: float
+    vat_rate: float
+    vat_category_code: str
+    line_total: float
+
+
 class InvoiceCreate(BaseModel):
     client_id: str
     issue_date: date
@@ -42,3 +55,4 @@ class InvoiceResponse(BaseModel):
     notes: Optional[str] = None
     created_at: str
     updated_at: str
+    lines: Optional[list[InvoiceLineResponse]] = None

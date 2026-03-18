@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(source .venv/bin/activate)",
+      "Bash(pip install:*)",
+      "Bash(uvicorn app.main:app --reload --port 8000)",
+      "Bash(xargs kill:*)",
+      "Bash(python -m py_compile app/services/anaf_oauth.py app/services/anaf_client.py app/routers/anaf_auth.py app/routers/invoices.py app/tasks/poll_anaf.py app/tasks/__init__.py)",
+      "Bash(for f:*)",
+      "Bash(do)",
+      "Bash(echo \"=== $f ===\")",
+      "Read(//Users/bobus/Projects/FacturAI/**)",
+      "Bash(done)",
+      "Bash(find /Users/bobus/Projects/FacturAI/backend -type d -name __pycache__ -exec rm -rf {} +)",
+      "Bash(git add:*)",
+      "Bash(git push:*)",
+      "Bash(gh api:*)",
+      "Bash(python3 -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\(''''full_name'''',''''''''\\)\\)\")",
+      "Bash(npm run:*)",
+      "Bash(curl -s https://anafbill-production.up.railway.app/api/health)",
+      "Bash(python -c \"from app.main import app; print\\(''Import OK''\\)\")",
+      "Bash(python3 -c \"from app.main import app; print\\(''Import OK''\\)\")",
+      "Bash(ls /Users/bobus/Projects/FacturAI/backend/.venv/bin/python*)",
+      "Bash(ls /Users/bobus/Projects/FacturAI/backend/venv/bin/python*)",
+      "Bash(.venv/bin/python -c \"from app.main import app; print\\(''Import OK''\\)\")",
+      "Bash(timeout 5 .venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 9999)",
+      "Bash(docker build:*)",
+      "Bash(brew install:*)",
+      "Bash(railway --version)",
+      "Bash(railway status:*)",
+      "Bash(railway login:*)",
+      "Bash(curl -sv https://anafbill-production.up.railway.app/api/health)"
+    ]
+  }
+}

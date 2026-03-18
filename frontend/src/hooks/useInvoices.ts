@@ -7,8 +7,8 @@ export function useInvoices(status?: string) {
     queryKey: ["invoices", status],
     queryFn: async () => {
       const params = status ? { status } : {}
-      const { data } = await api.get<{ invoices: Invoice[] }>("/invoices/", { params })
-      return data.invoices
+      const { data } = await api.get<Invoice[]>("/invoices/", { params })
+      return data
     },
   })
 }
